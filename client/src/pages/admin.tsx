@@ -44,7 +44,10 @@ export default function AdminPanel() {
     "Sports & Outdoors", 
     "Books & Media", 
     "Home & Garden", 
-    "Beauty & Personal Care"
+    "Beauty & Personal Care",
+    "Automotive",
+    "Pet Supplies",
+    "Toys & Games"
   ];
 
   useEffect(() => {
@@ -448,7 +451,7 @@ export default function AdminPanel() {
         {/* Products Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Products</CardTitle>
+            <CardTitle>All Products ({totalProducts} items)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -502,6 +505,11 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ${product.price}
+                        {product.originalPrice && (
+                          <div className="text-xs text-gray-500 line-through">
+                            ${product.originalPrice}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {product.stockQuantity || 0}

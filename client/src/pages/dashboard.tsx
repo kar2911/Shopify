@@ -28,7 +28,10 @@ export default function Dashboard() {
     "Sports & Outdoors", 
     "Books & Media", 
     "Home & Garden", 
-    "Beauty & Personal Care"
+    "Beauty & Personal Care",
+    "Automotive",
+    "Pet Supplies",
+    "Toys & Games"
   ];
 
   useEffect(() => {
@@ -169,6 +172,20 @@ export default function Dashboard() {
           {isMobileMenuOpen && (
             <div className="md:hidden py-4 border-t">
               <div className="space-y-4">
+                <div className="mb-4">
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 {user ? (
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">Welcome, {user.username}</p>
@@ -236,21 +253,56 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Category Pills for Mobile */}
+        <div className="mb-6 md:hidden">
+          <div className="flex overflow-x-auto space-x-2 pb-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="whitespace-nowrap flex-shrink-0"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Results Info */}
         <div className="mb-6">
-          <p className="text-gray-600 text-sm">
-            {searchQuery ? (
-              <>Showing results for "{searchQuery}" ({products.length} products)</>
-            ) : (
-              <>All Products ({products.length} items)</>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-gray-600 text-sm mb-2 sm:mb-0">
+              {searchQuery ? (
+                <>Showing results for "{searchQuery}" ({products.length} products)</>
+              ) : (
+                <>
+                  {selectedCategory === "All" ? "All Products" : selectedCategory} 
+                  ({products.length} items)
+                </>
+              )}
+            </p>
+            {(searchQuery || selectedCategory !== "All") && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("All");
+                }}
+                className="text-sm"
+              >
+                Clear filters
+              </Button>
             )}
-          </p>
+          </div>
         </div>
 
         {/* Products Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(12)].map((_, i) => (
               <Card key={i} className="overflow-hidden">
                 <div className="animate-pulse">
                   <div className="bg-gray-200 h-48 w-full"></div>
@@ -269,16 +321,21 @@ export default function Dashboard() {
               <Search className="w-12 h-12 mx-auto" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-600">
-              {searchQuery && (
-                <Button
-                  variant="outline"
-                  onClick={() => setSearchQuery("")}
-                >
-                  Clear search
-                </Button>
-              )}
+            <p className="text-gray-600 mb-4">
+              {searchQuery 
+                ? `No products match "${searchQuery}"`
+                : `No products found in ${selectedCategory}`
+              }
             </p>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("All");
+              }}
+            >
+              View all products
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -306,7 +363,7 @@ export default function Dashboard() {
                     </div>
                   )}
                   <div className="absolute top-2 right-2">
-                    <Badge variant="outline" className="bg-white/90 backdrop-blur-sm">
+                    <Badge variant="outline" className="bg-white/90 backdrop-blur-sm text-xs">
                       {product.category}
                     </Badge>
                   </div>
